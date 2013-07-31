@@ -42,7 +42,7 @@ This LWRP will import a certificate into a truststore, e.g.
     end
 
 Attributes:
-- `certificate` - the certificate to import in pem (_rfc_) format
+- `certificate` - the certificate to import in pem (rfc) format
 - `truststore_path` - the path of the truststore file
 - `mode` - file permissions mode
 - `owner` - keystore file owner
