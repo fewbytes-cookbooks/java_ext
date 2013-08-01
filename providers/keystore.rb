@@ -15,8 +15,8 @@ action :generate do
 				"-ext #{k}=#{v}"
 			else
 				"-ext #{k}"
-			end.join(" ")
-		end
+			end
+		end.join(" ")
 	end
 
 	execute "generate private key" do
