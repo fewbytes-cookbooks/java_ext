@@ -6,10 +6,20 @@ end
 
 action :generate do
 	bin_path = new_resource.java_bin_path || ::File.join(node["java"]["java_home"], "bin")
-	execute "generate private key" do
-		command "#{bin_path}/keytool -genkeypair -keystore #{new_resource.keystore_path}" +
+	_command = "#{bin_path}/keytool -genkeypair -keystore #{new_resource.keystore_path}" +
 			" -dname '#{new_resource.dn}' -alias '#{new_resource.cert_alias}'" +
 			" -keypass #{new_resource.password} -storepass #{new_resource.password}"
+	if new_resource.x509_extensions
+		_command += new_resource.x509_extensions.map do |k,v|
+			if v
+				"-ext #{k}=#{v}"
+			else
+				"-ext #{k}"
+			end.join(" ")
+	end
+
+	execute "generate private key" do
+		command _command
 		user new_resource.owner
 		group new_resource.group
 		not_if "#{bin_path}/keytool -list -keystore #{new_resource.keystore_path} " +
