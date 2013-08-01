@@ -4,20 +4,31 @@ def whyrun_supported?
 	true
 end
 
+def java_version
+	node["java"]["jdk_version"] || node["languages"]["java"]["version"].sub(/^1\.([0-9]+)\..*/, '\1')
+end
+
 action :generate do
 	bin_path = new_resource.java_bin_path || ::File.join(node["java"]["java_home"], "bin")
 	_command = "#{bin_path}/keytool -genkeypair -keystore #{new_resource.keystore_path}" +
 			" -dname '#{new_resource.dn}' -alias '#{new_resource.cert_alias}'" +
 			" -keypass #{new_resource.password} -storepass #{new_resource.password}"
+	
 	if new_resource.x509_extensions
-		_command += new_resource.x509_extensions.map do |k,v|
-			if v
-				"-ext #{k}=#{v}"
-			else
-				"-ext #{k}"
-			end
-		end.join(" ")
+		if java_version > "6"
+			_command += " " + new_resource.x509_extensions.map do |k,v|
+				if v
+					"-ext #{k}=#{v}"
+				else
+					"-ext #{k}"
+				end
+			end.join(" ")
+		else
+			::Chef::Log.warn "x509_extensions is not supported on java 6 keytool"
+		end
 	end
+
+	_command += " -validity #{new_resource.validity}" if new_resource.validity
 
 	execute "generate private key" do
 		command _command
