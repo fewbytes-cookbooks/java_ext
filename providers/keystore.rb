@@ -29,7 +29,8 @@ action :generate do
 	end
 
 	_command += " -validity #{new_resource.validity}" if new_resource.validity
-
+	_command += " -keyalg #{new_resource.keyalg}" if new_resource.keyalg
+	
 	execute "generate private key" do
 		command _command
 		user new_resource.owner
