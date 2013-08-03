@@ -8,6 +8,8 @@ Java cookbook - This cookbook does not `include_recipe "java"`, you should make 
 
 Usage
 -----
+### Recipes
+java_ext::jce - installs java cryptography extensions (policies) from Oracle's web site. As in the Java cookbook, you must accept Oracle's license terms by changing the `node['java']['oracle']['accept_oracle_download_terms']` attribute to true.
 
 ### LWRP
 #### java_ext_keystore

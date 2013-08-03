@@ -3,7 +3,11 @@ when "6", 6, "7", 7
 	jce_url = node["java_ext"]["jce"][node["java"]["jdk_version"].to_s]["url"]
 	jce_checksum = node["java_ext"]["jce"][node["java"]["jdk_version"].to_s]["checksum"]
 else
-	raise RuntimeError, "Unknown java version #{node["java"]["jdk_version"]}"
+	Chef::Aplication.fatal! "Unknown java version #{node["java"]["jdk_version"]}"
+end
+
+unless node['java']['oracle']['accept_oracle_download_terms']
+	Chef::Application.fatal!("You must set the attribute node['java']['oracle']['accept_oracle_download_terms'] to true if you want to download directly from the oracle site!")
 end
 
 package "unzip"
