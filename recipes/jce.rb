@@ -18,7 +18,7 @@ directory node["java_ext"]["jce_home"] do
 	mode "0755"
 end
 
-directory ::File.join(node["java"]["java_home"], "lib", "security") do
+directory ::File.join(node["java"]["java_home"], "jre", "lib", "security") do
 	mode "0755"
 end
 
@@ -34,10 +34,10 @@ bash "download and extract jce" do
 end
 
 %w(local_policy.jar US_export_policy.jar).each do |jar|
-	jar_path = ::File.join(node["java"]["java_home"], "lib", "security", jar)
+	jar_path = ::File.join(node["java"]["java_home"], "jre", "lib", "security", jar)
 	file ::File.join() do
 		action :delete
-		only_if {::File.symlink? jar_path}
+		not_if {::File.symlink? jar_path}
 	end
 	link jar_path do
 		to ::File.join(node["java_ext"]["jce_home"], "jce", jar)
