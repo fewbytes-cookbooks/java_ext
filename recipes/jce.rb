@@ -29,7 +29,7 @@ bash "download and extract jce" do
 	fi
 	unzip -o jce.zip
 	EOS
-	creates ::File.join(node["java_ext"]["jce_home"], "README.txt")
+	creates ::File.join(node["java_ext"]["jce_home"], "jce", "US_export_policy.jar")
 	cwd node["java_ext"]["jce_home"]
 end
 
