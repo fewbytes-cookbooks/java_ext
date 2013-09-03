@@ -38,7 +38,7 @@ action :generate do
 		not_if "#{bin_path}/keytool -list -keystore #{new_resource.keystore_path} " +
 			" -keypass #{new_resource.password} -storepass #{new_resource.password}" +
 			" -rfc -alias '#{new_resource.cert_alias}'"
-		notifies :create, "ruby_block[execute block with_certificate]", :immediately
+		notifies :create, "ruby_block[execute block with_certificate]", :immediately if new_resource.with_certificate.is_a?(Proc)
 	end
 
 	file new_resource.keystore_path do
@@ -47,14 +47,16 @@ action :generate do
 		mode new_resource.mode
 	end
 
-	ruby_block "execute block with_certificate" do
-		block do
-			extend ::Chef::Mixin::ShellOut
-			cert = shell_out!("#{bin_path}/keytool -exportcert -keystore #{new_resource.keystore_path}" +
-			" -alias '#{new_resource.cert_alias}'" +
-			" -keypass #{new_resource.password} -storepass #{new_resource.password} -rfc").stdout
-			new_resource.with_certificate.call(cert)
-		end
-		action :nothing
-	end
+  if new_resource.is_a?(Proc)
+    ruby_block "execute block with_certificate" do
+      block do
+        extend ::Chef::Mixin::ShellOut
+        cert = shell_out!("#{bin_path}/keytool -exportcert -keystore #{new_resource.keystore_path}" +
+        " -alias '#{new_resource.cert_alias}'" +
+        " -keypass #{new_resource.password} -storepass #{new_resource.password} -rfc").stdout
+        new_resource.with_certificate.call(cert)
+      end
+      action :nothing
+    end
+  end
 end
