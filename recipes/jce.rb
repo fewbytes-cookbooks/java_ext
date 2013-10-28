@@ -32,16 +32,16 @@ bash "download and extract jce" do
 	unzip -o jce.zip
   find -name '*.jar' -exec mv '{}' #{node["java_ext"]["jce_home"]} \\;
 	EOS
-	creates ::File.join(node["java_ext"]["jce_home"], "jce", "US_export_policy.jar")
+	creates ::File.join(node["java_ext"]["jce_home"], "US_export_policy.jar")
 end
 
 %w(local_policy.jar US_export_policy.jar).each do |jar|
 	jar_path = ::File.join(node["java"]["java_home"], "jre", "lib", "security", jar)
-	file ::File.join() do
+	file jar_path do
 		action :delete
 		not_if {::File.symlink? jar_path}
 	end
 	link jar_path do
-		to ::File.join(node["java_ext"]["jce_home"], "jce", jar)
+		to ::File.join(node["java_ext"]["jce_home"], jar)
 	end
 end
