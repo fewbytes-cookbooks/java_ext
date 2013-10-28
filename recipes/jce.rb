@@ -45,8 +45,3 @@ end
 		to ::File.join(node["java_ext"]["jce_home"], "jce", jar)
 	end
 end
-
-execute "inject policy changes" do
-  command ""
-  not_if ""
-end
