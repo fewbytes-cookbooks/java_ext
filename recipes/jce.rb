@@ -30,7 +30,7 @@ bash "download and extract jce" do
 		curl -L --cookie 'oraclelicense=accept-securebackup-cookie;gpw_e24=http://edelivery.oracle.com' -o jce.zip #{jce_url}
 	fi
 	unzip -o jce.zip
-  find -name '*.jar' -exec mv '{}' #{node["java_ext"]["jce"]} \;
+  find -name '*.jar' -exec mv '{}' #{node["java_ext"]["jce_home"]} \\;
 	EOS
 	creates ::File.join(node["java_ext"]["jce_home"], "jce", "US_export_policy.jar")
 end
