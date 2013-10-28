@@ -47,7 +47,7 @@ action :generate do
 		mode new_resource.mode
 	end
 
-  if new_resource.is_a?(Proc)
+  if new_resource.with_certificate.is_a?(Proc)
     ruby_block "execute block with_certificate" do
       block do
         extend ::Chef::Mixin::ShellOut
