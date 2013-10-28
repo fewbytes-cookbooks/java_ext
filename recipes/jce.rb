@@ -24,13 +24,15 @@ end
 
 bash "download and extract jce" do
 	code <<-EOS
+  [[ -d  #{Chef::Config[:file_cache_path]}/java_ext ]] || mkdir #{Chef::Config[:file_cache_path]}/java_ext
+  cd #{Chef::Config[:file_cache_path]}/java_ext
 	if ! echo "#{jce_checksum}  jce.zip" | sha256sum -c - >/dev/null; then
 		curl -L --cookie 'oraclelicense=accept-securebackup-cookie;gpw_e24=http://edelivery.oracle.com' -o jce.zip #{jce_url}
 	fi
 	unzip -o jce.zip
+  find -name '*.jar' -exec mv '{}' #{node["java_ext"]["jce"]} \;
 	EOS
 	creates ::File.join(node["java_ext"]["jce_home"], "jce", "US_export_policy.jar")
-	cwd node["java_ext"]["jce_home"]
 end
 
 %w(local_policy.jar US_export_policy.jar).each do |jar|
@@ -42,4 +44,9 @@ end
 	link jar_path do
 		to ::File.join(node["java_ext"]["jce_home"], "jce", jar)
 	end
+end
+
+execute "inject policy changes" do
+  command ""
+  not_if ""
 end
