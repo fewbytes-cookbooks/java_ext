@@ -1,5 +1,5 @@
 case node["java"]["jdk_version"]
-when "6", 6, "7", 7
+when "6", 6, "7", 7, "8", 8
 	jce_url = node["java_ext"]["jce"][node["java"]["jdk_version"].to_s]["url"]
 	jce_checksum = node["java_ext"]["jce"][node["java"]["jdk_version"].to_s]["checksum"]
 else
