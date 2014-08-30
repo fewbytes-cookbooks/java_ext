@@ -13,9 +13,12 @@ end
 package "unzip"
 package "curl"
 
-directory node["java_ext"]["jce_home"] do
-	recursive true
-	mode "0755"
+bash "create jce directory" do
+  umask "022"
+	code <<-EOS
+    mkdir -p #{node["java_ext"]["jce_home"]}
+	EOS
+	creates #{node["java_ext"]["jce_home"]
 end
 
 directory ::File.join(node["java"]["java_home"], "jre", "lib", "security") do
