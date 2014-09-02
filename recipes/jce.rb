@@ -13,12 +13,19 @@ end
 package "unzip"
 package "curl"
 
-bash "create jce directory" do
-  umask "022"
-	code <<-EOS
-    mkdir -p #{node["java_ext"]["jce_home"]}
-	EOS
-	creates #{node["java_ext"]["jce_home"]
+def ancestor_directories(target_dir)
+    def ancestor_directory_list(dir)
+        dirname = File.dirname(dir)
+        ['.', dirname].include?(dir) ? [] : (ancestor_directory_list(dirname) + [dir])
+    end
+
+    ancestor_directory_list(target_dir).each {|dir| yield dir }
+end
+
+ancestor_directories node["java_ext"]["jce_home"] do |dir|
+    directory dir do
+        mode "0755"
+    end
 end
 
 directory ::File.join(node["java"]["java_home"], "jre", "lib", "security") do
