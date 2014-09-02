@@ -5,3 +5,4 @@ default["java_ext"]["jce"]["7"]["checksum"] = "7a8d790e7bd9c2f82a83baddfae765797
 default["java_ext"]["jce"]["6"]["url"] = "http://download.oracle.com/otn-pub/java/jce_policy/6/jce_policy-6.zip"
 default["java_ext"]["jce"]["6"]["checksum"] = "d0c2258c3364120b4dbf7dd1655c967eee7057ac6ae6334b5ea8ceb8bafb9262"
 default["java_ext"]["jce_home"] = "/opt/java_ext/jce"
+default["java_ext"]["create_jce_home_recursively"] = true
