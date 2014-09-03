@@ -9,7 +9,12 @@ Java cookbook - This cookbook does not `include_recipe "java"`, you should make 
 Usage
 -----
 ### Recipes
-java_ext::jce - installs java cryptography extensions (policies) from Oracle's web site. As in the Java cookbook, you must accept Oracle's license terms by changing the `node['java']['oracle']['accept_oracle_download_terms']` attribute to true.
+#### java_ext::jce 
+The recipe installs java cryptography extensions (policies) from Oracle's web site. As in the Java cookbook, you must accept Oracle's license terms by changing the `node['java']['oracle']['accept_oracle_download_terms']` attribute to true.
+
+Attributes:
+- `node["java_ext"]["jce_home"]` - where the jce jar files are installed. Default to `/opt/java_ext/jce`
+- `node["java_ext"]["create_jce_home_recursively"]` - whether the recipe should create ancestor folders of the jce home automatically. Default to true.
 
 ### LWRP
 #### java_ext_keystore

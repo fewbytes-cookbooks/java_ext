@@ -13,9 +13,25 @@ end
 package "unzip"
 package "curl"
 
+if node["java_ext"]["create_jce_home_recursively"]
+  def ancestor_directories(target_dir)
+    def ancestor_directory_list(dir)
+      dirname = File.dirname(dir)
+      ['.', dirname].include?(dir) ? [] : (ancestor_directory_list(dirname) + [dir])
+    end
+
+    ancestor_directory_list(File.dirname(target_dir)).each {|dir| yield dir }
+  end
+
+  ancestor_directories node["java_ext"]["jce_home"] do |dir|
+    directory dir do
+      mode "0755"
+    end
+  end
+end
+
 directory node["java_ext"]["jce_home"] do
-	recursive true
-	mode "0755"
+  mode "0755"
 end
 
 directory ::File.join(node["java"]["java_home"], "jre", "lib", "security") do
