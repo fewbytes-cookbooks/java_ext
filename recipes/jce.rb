@@ -1,9 +1,11 @@
+jdk_version = node["java"]["jdk_version"].to_s
+
 case node["java"]["jdk_version"]
 when "6", 6, "7", 7, "8", 8
-	jce_url = node["java_ext"]["jce"][node["java"]["jdk_version"].to_s]["url"]
-	jce_checksum = node["java_ext"]["jce"][node["java"]["jdk_version"].to_s]["checksum"]
+	jce_url = node["java_ext"]["jce"][jdk_version]["url"]
+	jce_checksum = node["java_ext"]["jce"][jdk_version]["checksum"]
 else
-	Chef::Aplication.fatal! "Unknown java version #{node["java"]["jdk_version"]}"
+	Chef::Aplication.fatal! "Unknown java version #{jdk_version}"
 end
 
 unless node['java']['oracle']['accept_oracle_download_terms']
@@ -13,25 +15,9 @@ end
 package "unzip"
 package "curl"
 
-if node["java_ext"]["create_jce_home_recursively"]
-  def ancestor_directories(target_dir)
-    def ancestor_directory_list(dir)
-      dirname = File.dirname(dir)
-      ['.', dirname].include?(dir) ? [] : (ancestor_directory_list(dirname) + [dir])
-    end
-
-    ancestor_directory_list(File.dirname(target_dir)).each {|dir| yield dir }
-  end
-
-  ancestor_directories node["java_ext"]["jce_home"] do |dir|
-    directory dir do
-      mode "0755"
-    end
-  end
-end
-
-directory node["java_ext"]["jce_home"] do
+directory ::File.join(node["java_ext"]["jce_home"],jdk_version) do
   mode "0755"
+  recursive node["java_ext"]["create_jce_home_recursively"]
 end
 
 directory ::File.join(node["java"]["java_home"], "jre", "lib", "security") do
@@ -46,9 +32,9 @@ bash "download and extract jce" do
 		curl -L --cookie 'oraclelicense=accept-securebackup-cookie;gpw_e24=http://edelivery.oracle.com' -o jce.zip #{jce_url}
 	fi
 	unzip -o jce.zip
-  find -name '*.jar' -exec mv '{}' #{node["java_ext"]["jce_home"]} \\;
+  find -name '*.jar' | xargs -I JCE_JAR mv JCE_JAR #{node["java_ext"]["jce_home"]}/#{jdk_version}/
 	EOS
-	creates ::File.join(node["java_ext"]["jce_home"], "US_export_policy.jar")
+	creates ::File.join(node["java_ext"]["jce_home"], jdk_version,"US_export_policy.jar")
 end
 
 %w(local_policy.jar US_export_policy.jar).each do |jar|
@@ -58,6 +44,6 @@ end
 		not_if {::File.symlink? jar_path}
 	end
 	link jar_path do
-		to ::File.join(node["java_ext"]["jce_home"], jar)
+		to ::File.join(node["java_ext"]["jce_home"], jdk_version, jar)
 	end
 end
