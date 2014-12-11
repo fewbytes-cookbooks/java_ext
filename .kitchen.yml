@@ -1,0 +1,46 @@
+driver:
+  name: vagrant
+
+provisioner:
+  name: chef_zero
+
+platforms:
+  - name: centos-5.10
+  - name: centos-6.5
+  - name: centos-7.0
+  - name: ubuntu-1004
+  - name: ubuntu-1204
+  - name: ubuntu-1310
+
+suites:
+
+- name: jdk6
+  run_list:
+  - recipe[java::default]
+  - recipe[java_ext::jce]
+  attributes: 
+    java:
+      install_flavor: oracle
+      jdk_version: 6
+      oracle:
+        accept_oracle_download_terms: true
+- name: jdk7
+  run_list:
+  - recipe[java::default]
+  - recipe[java_ext::jce]
+  attributes: 
+    java:
+      install_flavor: oracle
+      jdk_version: 7
+      oracle:
+        accept_oracle_download_terms: true
+- name: jdk8
+  run_list:
+  - recipe[java::default]
+  - recipe[java_ext::jce]
+  attributes: 
+    java:
+      install_flavor: oracle
+      jdk_version: 8
+      oracle:
+        accept_oracle_download_terms: true
