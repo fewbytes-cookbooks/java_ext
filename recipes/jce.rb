@@ -15,9 +15,24 @@ end
 package "unzip"
 package "curl"
 
-directory ::File.join(node["java_ext"]["jce_home"],jdk_version) do
+def ancestor_directories(target_dir)
+    def ancestor_directory_list(dir)
+      dirname = File.dirname(dir)
+      ['.', dirname].include?(dir) ? [] : (ancestor_directory_list(dirname) + [dir])
+    end
+
+    ancestor_directory_list(File.dirname(target_dir)).each {|dir| yield dir }
+end
+
+java_ext_home = ::File.join(node["java_ext"]["jce_home"],jdk_version)
+ancestor_directories java_ext_home do |dir|
+    directory dir do
+      mode "0755"
+    end
+end if node["java_ext"]["create_jce_home_recursively"]
+
+directory java_ext_home do
   mode "0755"
-  recursive node["java_ext"]["create_jce_home_recursively"]
 end
 
 directory ::File.join(node["java"]["java_home"], "jre", "lib", "security") do
@@ -44,6 +59,6 @@ end
 		not_if {::File.symlink? jar_path}
 	end
 	link jar_path do
-		to ::File.join(node["java_ext"]["jce_home"], jdk_version, jar)
+		to ::File.join(java_ext_home, jar)
 	end
 end
